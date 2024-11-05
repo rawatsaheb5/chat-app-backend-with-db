@@ -91,6 +91,36 @@ const signOut = (req, res) => {
 
 
 
+const addToChat = async (req, res) => {
+    try {
+        const { yourEmail, otherUserEmail } = req.body;
+        if (!yourEmail || !otherUserEmail) {
+          return res.status(400).json({
+            message: "all fields are required",
+          });
+        }
+        const existingOtherUser = await User.findOne({ email: otherUserEmail });
+        if (!existingUser) {
+          return res.status(400).json({
+            message: "User with this email not exists",
+          });
+        }
+      
+        const yourInformation = await User.findOne({ email: yourEmail });
+        if (!yourInformation) {
+          return res.status(400).json({
+            message: "Your account doesn't exists",
+          });
+        }
+        yourInformation.chats.push(existingOtherUser._id);
+        await yourInformation.save();
+        return res.status(200).json({
+          message: "New user added to the chat",
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Error while adding user to the chat in", error });
+  }
+};
 
 
 module.exports = {
